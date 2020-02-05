@@ -98,9 +98,10 @@ define(function(require){
 
             getId = ({id}) => id,
             getName = ({name}) => name,
-
             getFormattedQuantity = ({quantity}) => d3Format.format(numberFormat)(quantity) + unit,
-            getCircleFill = ({name}) => colorScale(name),
+            getCircleFill = ({name, color}) => {
+                return color ? color : colorScale(name)
+            },
             hasQuantity = ({quantity}) => typeof quantity === 'number' || typeof quantity === 'string',
 
             entries,
@@ -244,6 +245,7 @@ define(function(require){
                     }
                     d.name = String(d.name);
                     d.id = +d.id;
+                    d.color = d.color;
 
                     return [...acc, d];
                 }, []);

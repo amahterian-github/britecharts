@@ -34,13 +34,15 @@ define(function(require){
      * @property {String} name         Name of the entry
      * @property {String} stack        Stack of the entry
      * @property {Number} value        Value of the entry
+     * @property {String} color        Color of the entry
      *
      * @example
      * [
      *     {
      *         name: "2011-01",
      *         stack: "Direct",
-     *         value: 0
+     *         value: 0,
+     *         color: "#FF00AA"
      *     }
      * ]
      */
@@ -98,6 +100,7 @@ define(function(require){
 
             colorScale,
             categoryColorMap,
+            stackToColorMap = [],
 
             layers,
 
@@ -166,6 +169,7 @@ define(function(require){
                 data = cleanData(_data);
 
                 prepareData(data);
+                createStackToColorMap(data);
                 buildScales();
                 buildLayers();
                 buildSVG(this);
@@ -454,9 +458,8 @@ define(function(require){
 
             layerElements = layerJoin
                 .enter()
-                  .append('g')
-                    .attr('fill', (({key}) => categoryColorMap[key]))
-                    .classed('layer', true);
+                .append('g')
+                .attr('fill', (({key}) => getAssociatedColor(key))).classed('layer', true);
 
             let barJoin = layerElements
                 .selectAll('.bar')
@@ -511,9 +514,8 @@ define(function(require){
 
             layerElements = layerJoin
                 .enter()
-                  .append('g')
-                    .attr('fill', (({key}) => categoryColorMap[key]))
-                    .classed('layer', true);
+                .append('g')
+                .attr('fill', (({key}) => getAssociatedColor(key))).classed('layer', true);
 
             let barJoin = layerElements
                     .selectAll('.bar')
@@ -809,6 +811,30 @@ define(function(require){
                     .attr('height', i(t))
                     .style('opacity', j(t));
             }
+        }
+
+        /**
+         *
+         * @param {Number} key element id
+         */
+        function getAssociatedColor(key) {
+            const obj = stackToColorMap.find(x => x.stack === key) || {};
+
+            return obj.color || categoryColorMap[key];
+        }
+
+        /**
+         *
+         * @param {Object} data array of objects supplied to the chart
+         */
+        function createStackToColorMap(data) {
+            stackToColorMap = Array.from(new Set(data.map(s => s.stack)))
+                .map(stack => {
+                    return {
+                        stack: stack,
+                        color: data.find(s => s.stack === stack).color
+                    };
+                });
         }
 
         // API
