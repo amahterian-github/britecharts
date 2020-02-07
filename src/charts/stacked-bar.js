@@ -818,9 +818,7 @@ define(function(require){
          * @param {Number} key element id
          */
         function getAssociatedColor(key) {
-            const obj = stackToColorMap.find(x => x.stack === key) || {};
-
-            return obj.color || categoryColorMap[key];
+            return stackToColorMap.get(key) || categoryColorMap[key];
         }
 
         /**
@@ -828,13 +826,12 @@ define(function(require){
          * @param {Object} data array of objects supplied to the chart
          */
         function createStackToColorMap(data) {
-            stackToColorMap = Array.from(new Set(data.map(s => s.stack)))
+            const arr = Array.from(new Set(data.map(s => s.stack)))
                 .map(stack => {
-                    return {
-                        stack: stack,
-                        color: data.find(s => s.stack === stack).color
-                    };
+                    return [stack, data.find(s => s.stack === stack).color];
                 });
+
+            stackToColorMap = new Map(arr);
         }
 
         // API

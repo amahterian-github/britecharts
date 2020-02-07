@@ -245,7 +245,6 @@ define(function(require){
                     }
                     d.name = String(d.name);
                     d.id = +d.id;
-                    d.color = d.color;
 
                     return [...acc, d];
                 }, []);
